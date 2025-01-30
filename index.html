@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Breakdown Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 400px; margin: auto; display: flex; flex-direction: column; }
+        label { margin-top: 10px; font-weight: bold; }
+        select, button { margin-top: 5px; padding: 8px; font-size: 16px; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+    <h2>Machine Breakdown Report</h2>
+    <form id="breakdownForm">
+        <label for="machine_name">Select Machine:</label>
+        <select id="machine_name" name="machine_name" required>
+            <option value="Machine A">Machine A</option>
+            <option value="Machine B">Machine B</option>
+            <option value="Machine C">Machine C</option>
+        </select>
+
+        <label for="issue">Select Issue:</label>
+        <select id="issue" name="issue" required>
+            <option value="Overheating">Overheating</option>
+            <option value="Electrical Fault">Electrical Fault</option>
+            <option value="Mechanical Failure">Mechanical Failure</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("breakdownForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+
+            fetch("/submit", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
