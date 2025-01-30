@@ -23,7 +23,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_SENDER = "your-email@gmail.com"
 EMAIL_PASSWORD = "your-email-password"
-EMAIL_MANAGER = "manager-email@gmail.com"
+EMAIL_MANAGER = "laxmi@pck-buderus.com"
 
 # Function to send an email alert
 def send_email_alert(machine_name):
