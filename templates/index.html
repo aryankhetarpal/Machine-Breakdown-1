@@ -11,41 +11,93 @@
         select, button { margin-top: 5px; padding: 8px; font-size: 16px; }
         button { background-color: #28a745; color: white; border: none; cursor: pointer; }
         button:hover { background-color: #218838; }
+        #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
     <h2>Machine Breakdown Report</h2>
+    <div id="success-message">Breakdown recorded successfully!</div>
     <form id="breakdownForm">
         <label for="machine_name">Select Machine:</label>
         <select id="machine_name" name="machine_name" required>
-            <option value="Machine A">Machine A</option>
-            <option value="Machine B">Machine B</option>
-            <option value="Machine C">Machine C</option>
+            <option value="">-- Select Machine --</option>
+            <option value="ITL 1">ITL 1</option>
+            <option value="ITL 2">ITL 2</option>
+            <option value="K1">K1</option>
+            <option value="K2">K2</option>
+            <option value="K3">K3</option>
+            <option value="K4">K4</option>
+            <option value="J1">J1</option>
+            <option value="J2">J2</option>
+            <option value="V3">V3</option>
+            <option value="V5">V5</option>
+            <option value="V6">V6</option>
+            <option value="BITL">BITL</option>
+            <option value="ITM2">ITM2</option>
+            <option value="ITM3">ITM3</option>
+            <option value="Rivers">Rivers</option>
+            <option value="K5">K5</option>
+            <option value="K6">K6</option>
+            <option value="K7">K7</option>
+            <option value="K8">K8</option>
+            <option value="K9">K9</option>
+            <option value="V7">V7</option>
+            <option value="B">B</option>
+            <option value="V8">V8</option>
+            <option value="K 10">K 10</option>
+            <option value="Friggi">Friggi</option>
+            <option value="B2">B2</option>
+            <option value="FABBARICA ITLIANA SWGATRICI">FABBARICA ITLIANA SWGATRICI</option>
         </select>
 
         <label for="issue">Select Issue:</label>
         <select id="issue" name="issue" required>
-            <option value="Overheating">Overheating</option>
-            <option value="Electrical Fault">Electrical Fault</option>
-            <option value="Mechanical Failure">Mechanical Failure</option>
+            <option value="">-- Select Issue --</option>
+            <option value="Oil Spring Problem">Oil Spring Problem</option>
+            <option value="Blade Guide Problem">Blade Guide Problem</option>
+            <option value="Oil Pressure">Oil Pressure</option>
+            <option value="Blade Tension">Blade Tension</option>
+            <option value="Gear box Problem">Gear box Problem</option>
+            <option value="Hydraulic Problem">Hydraulic Problem</option>
+            <option value="Electrical Problem">Electrical Problem</option>
+            <option value="Axis Ball Screw">Axis Ball Screw</option>
+            <option value="Timing Belt">Timing Belt</option>
+            <option value="Spindle Feedback">Spindle Feedback</option>
         </select>
 
         <button type="submit">Submit</button>
     </form>
 
+    <button onclick="openLogFile()">Open Breakdown Log</button>
+
     <script>
         document.getElementById("breakdownForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            let formData = new FormData(this);
-
-            fetch("/submit", {
-                method: "POST",
+            const formData = new FormData(this);
+            
+            fetch('/submit', {
+                method: 'POST',
                 body: formData
             })
             .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => console.error("Error:", error));
+            .then(data => {
+                if (data.message) {
+                    document.getElementById("success-message").style.display = "block";
+                    setTimeout(() => {
+                        document.getElementById("success-message").style.display = "none";
+                    }, 3000);
+                    document.getElementById("breakdownForm").reset();
+                } else {
+                    alert(data.error);
+                }
+            });
         });
+
+        function openLogFile() {
+            fetch('/open_log')
+                .then(response => response.json())
+                .then(data => alert(data.message || data.error));
+        }
     </script>
 </body>
 </html>

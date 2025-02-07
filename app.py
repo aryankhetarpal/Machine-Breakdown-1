@@ -3,6 +3,7 @@ import openpyxl
 import os
 import smtplib
 import datetime
+import subprocess
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
@@ -52,29 +53,55 @@ def index():
 # Handle form submission
 @app.route("/submit", methods=["POST"])
 def submit():
-    machine_name = request.form.get("machine_name")
-    issue = request.form.get("issue")
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
+    try:
+        machine_name = request.form.get("machine_name")
+        issue = request.form.get("issue")
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    # Save data to Excel
-    wb = openpyxl.load_workbook(EXCEL_FILE)
-    ws = wb.active
-    ws.append([date, machine_name, issue])
-    wb.save(EXCEL_FILE)
+        if not machine_name or not issue:
+            return jsonify({"error": "Both fields are required"}), 400
 
-    # Check if the machine has more than 2 issues in a week
-    recent_issues = 0
-    one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
-    
-    for row in ws.iter_rows(values_only=True):
-        row_date = datetime.datetime.strptime(row[0], "%Y-%m-%d")
-        if row[1] == machine_name and row_date >= one_week_ago:
-            recent_issues += 1
+        # Save data to Excel
+        wb = openpyxl.load_workbook(EXCEL_FILE)
+        ws = wb.active
+        ws.append([date, machine_name, issue])
+        wb.save(EXCEL_FILE)
 
-    if recent_issues > 2:
-        send_email_alert(machine_name)
+        # Check if the machine has more than 2 issues in a week
+        recent_issues = 0
+        one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
 
-    return jsonify({"message": "Breakdown recorded successfully!"})
+        for row in ws.iter_rows(values_only=True):
+            if row[0] and row[1]:  # Ensure row has valid data
+                try:
+                    row_date = datetime.datetime.strptime(row[0], "%Y-%m-%d")
+                    if row[1] == machine_name and row_date >= one_week_ago:
+                        recent_issues += 1
+                except ValueError:
+                    continue  # Skip invalid date formats
+
+        if recent_issues > 2:
+            send_email_alert(machine_name)
+
+        return jsonify({"message": "Breakdown recorded successfully!"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Route to open Excel file
+@app.route("/open_log")
+def open_log():
+    try:
+        if os.path.exists(EXCEL_FILE):
+            if os.name == "nt":  # Windows
+                os.startfile(EXCEL_FILE)
+            elif os.name == "posix":  # Mac/Linux
+                subprocess.run(["open", EXCEL_FILE])
+            return jsonify({"message": "Log file opened successfully!"})
+        else:
+            return jsonify({"error": "Log file not found!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
