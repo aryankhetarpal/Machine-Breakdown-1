@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 app = Flask(__name__)
 
 # Define Excel file
-EXCEL_FILE = "/home/site/wwwroot/machine_breakdowns.xlsx"  # For Azure Web Apps
+EXCEL_FILE = os.path.join(os.getcwd(), "machine_breakdowns.xlsx")
 
 
 # Ensure the Excel file exists with headers
