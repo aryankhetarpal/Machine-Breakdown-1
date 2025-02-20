@@ -3,27 +3,27 @@ import datetime
 import smtplib
 from email.mime.text import MIMEText
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 
 app = Flask(__name__)
 
 # Google Sheets configuration
 SHEET_NAME = "Machine Breakdown"
-CREDENTIALS_FILE = "google_credentials.json"  # Replace with your credentials file
+CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with your actual file name
 
 # Authenticate with Google Sheets
 def authenticate_sheets():
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scope)
     client = gspread.authorize(creds)
     return client.open(SHEET_NAME).sheet1
 
 # Email configuration (Update these with your details)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-EMAIL_SENDER = "your-email@gmail.com"
-EMAIL_PASSWORD = "your-email-password"
-EMAIL_MANAGER = "laxmi@pck-buderus.com"
+EMAIL_SENDER = "your-email@gmail.com"  # Replace with your actual email
+EMAIL_PASSWORD = "your-email-password"  # App Password or secure credential
+EMAIL_MANAGER = "laxmi@pck-buderus.com"  # Manager's email
 
 # Function to send an email alert
 def send_email_alert(machine_name):
