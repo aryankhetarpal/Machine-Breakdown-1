@@ -1,16 +1,18 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, render_template
 from azure.storage.blob import BlobServiceClient
 import openpyxl
 import os
 import smtplib
+from flask import send_file
 import datetime
 import subprocess
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
-# Define a persistent Excel file location for Azure
-EXCEL_FILE = "/home/site/wwwroot/machine_breakdowns.xlsx"
+# Define Excel file
+EXCEL_FILE = os.path.join(os.getcwd(), "machine_breakdowns.xlsx")
+
 
 # Ensure the Excel file exists with headers
 if not os.path.exists(EXCEL_FILE):
@@ -20,11 +22,11 @@ if not os.path.exists(EXCEL_FILE):
     ws.append(["Date", "Machine Name", "Issue"])
     wb.save(EXCEL_FILE)
 
-# Email configuration (Use environment variables for security)
+# Email configuration (Change these to your details)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-EMAIL_SENDER = os.getenv("EMAIL_SENDER")  # Store in Azure App Config
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # Store securely
+EMAIL_SENDER = "your-email@gmail.com"
+EMAIL_PASSWORD = "your-email-password"
 EMAIL_MANAGER = "laxmi@pck-buderus.com"
 
 # Function to send an email alert
@@ -45,6 +47,11 @@ def send_email_alert(machine_name):
         print("Email sent successfully.")
     except Exception as e:
         print("Error sending email:", e)
+
+# Route for main form page
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 # Handle form submission
 @app.route("/submit", methods=["POST"])
@@ -84,12 +91,16 @@ def submit():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Route to download the Excel file (Replaces 'open_log' since Azure doesn't support GUI apps)
-@app.route("/download_log")
-def download_log():
+# Route to open Excel file
+@app.route("/open_log")
+def open_log():
     try:
         if os.path.exists(EXCEL_FILE):
-            return send_file(EXCEL_FILE, as_attachment=True)
+            if os.name == "nt":  # Windows
+                os.startfile(EXCEL_FILE)
+            elif os.name == "posix":  # Mac/Linux
+                subprocess.run(["open", EXCEL_FILE])
+            return jsonify({"message": "Log file opened successfully!"})
         else:
             return jsonify({"error": "Log file not found!"}), 404
     except Exception as e:
