@@ -11,6 +11,33 @@ app = Flask(__name__)
 # GitHub raw file link (replace with actual URL)
 GITHUB_FILE_URL = "https://github.com/aryankhetarpal/Machine-Breakdown/blob/main/machine_breakdowns.xlsx"
 
+def fetch_and_open_excel():
+    try:
+        # Step 1: Download the Excel file
+        response = requests.get(GITHUB_FILE_URL, stream=True)
+
+        # Step 2: Check if download is successful
+        if response.status_code != 200:
+            return f"Error: Failed to fetch the file, Status Code: {response.status_code}"
+
+        # Step 3: Check if response content type is an Excel file
+        content_type = response.headers.get("Content-Type", "")
+        if "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" not in content_type:
+            return f"Error: Expected an Excel file but received {content_type}"
+
+        # Step 4: Save and open the file
+        temp_file = "temp_machine_breakdowns.xlsx"
+        with open(temp_file, "wb") as file:
+            file.write(response.content)
+
+        # Step 5: Open the file with openpyxl
+        wb = openpyxl.load_workbook(temp_file)
+        ws = wb.active
+        return f"Excel file opened successfully! First cell: {ws.cell(row=1, column=1).value}"
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
 # Email configuration (Change these to your details)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
