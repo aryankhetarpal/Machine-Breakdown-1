@@ -1,26 +1,15 @@
-from flask import Flask, request, jsonify, render_template
-from azure.storage.blob import BlobServiceClient
-import openpyxl
-import os
-import smtplib
-from flask import send_file
+from flask import Flask, request, jsonify, render_template, redirect
 import datetime
-import subprocess
+import smtplib
 from email.mime.text import MIMEText
+import openpyxl
+import requests
+import os
 
 app = Flask(__name__)
 
-# Define Excel file
-EXCEL_FILE = os.path.join(os.getcwd(), "machine_breakdowns.xlsx")
-
-
-# Ensure the Excel file exists with headers
-if not os.path.exists(EXCEL_FILE):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Breakdowns"
-    ws.append(["Date", "Machine Name", "Issue"])
-    wb.save(EXCEL_FILE)
+# GitHub raw file link (replace with actual URL)
+GITHUB_FILE_URL = "https://github.com/your-username/your-repo/raw/main/machine_breakdowns.xlsx"
 
 # Email configuration (Change these to your details)
 SMTP_SERVER = "smtp.gmail.com"
@@ -64,11 +53,20 @@ def submit():
         if not machine_name or not issue:
             return jsonify({"error": "Both fields are required"}), 400
 
-        # Save data to Excel
-        wb = openpyxl.load_workbook(EXCEL_FILE)
+        # Download the Excel file
+        response = requests.get(GITHUB_FILE_URL)
+        if response.status_code != 200:
+            return jsonify({"error": "Failed to fetch the Excel file"}), 500
+
+        # Save file temporarily and open it
+        temp_file = "temp_machine_breakdowns.xlsx"
+        with open(temp_file, "wb") as file:
+            file.write(response.content)
+
+        wb = openpyxl.load_workbook(temp_file)
         ws = wb.active
         ws.append([date, machine_name, issue])
-        wb.save(EXCEL_FILE)
+        wb.save(temp_file)
 
         # Check if the machine has more than 2 issues in a week
         recent_issues = 0
@@ -91,20 +89,10 @@ def submit():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Route to open Excel file
+# Route to open Excel file (redirects to GitHub)
 @app.route("/open_log")
 def open_log():
-    try:
-        if os.path.exists(EXCEL_FILE):
-            if os.name == "nt":  # Windows
-                os.startfile(EXCEL_FILE)
-            elif os.name == "posix":  # Mac/Linux
-                subprocess.run(["open", EXCEL_FILE])
-            return jsonify({"message": "Log file opened successfully!"})
-        else:
-            return jsonify({"error": "Log file not found!"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return redirect(GITHUB_FILE_URL)
 
 if __name__ == "__main__":
     app.run(debug=True)
