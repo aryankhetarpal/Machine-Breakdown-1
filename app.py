@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 
 # GitHub raw file link (replace with actual URL)
-GITHUB_FILE_URL = "https://github.com/your-username/your-repo/raw/main/machine_breakdowns.xlsx"
+GITHUB_FILE_URL = "https://github.com/aryankhetarpal/Machine-Breakdown/blob/main/machine_breakdowns.xlsx"
 
 # Email configuration (Change these to your details)
 SMTP_SERVER = "smtp.gmail.com"
