@@ -3,10 +3,14 @@ import datetime
 import smtplib
 from email.mime.text import MIMEText
 import gspread
+import os
+import json
 from google.oauth2.service_account import Credentials
 
 app = Flask(__name__)
 
+
+google_credentials = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
 # Google Sheets configuration
 SHEET_NAME = "Machine Breakdown"
 CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with your actual file name
