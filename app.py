@@ -11,34 +11,6 @@ app = Flask(__name__)
 
 
 google_credentials = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
-
-if google_credentials_str:
-    try:
-        google_credentials = json.loads(google_credentials_str)
-        print("Loaded credentials from environment variable.")
-    except json.JSONDecodeError:
-        print("Error: GOOGLE_CREDENTIALS is set but contains invalid JSON.")
-        google_credentials = None
-else:
-    # Fallback: Load credentials from a local file
-    credentials_file = "credentials.json"
-    if os.path.exists(credentials_file):
-        with open(credentials_file, "r") as file:
-            google_credentials = json.load(file)
-        print("Loaded credentials from credentials.json file.")
-    else:
-        print("Error: No valid Google credentials found. Please set the environment variable or provide a credentials.json file.")
-        google_credentials = None
-
-# Initialize Google Sheets API only if credentials are available
-if google_credentials:
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(google_credentials, scope)
-    client = gspread.authorize(creds)
-    print("Google Sheets API initialized successfully.")
-else:
-    print("Google Sheets API initialization failed due to missing credentials.")
-    
 # Google Sheets configuration
 SHEET_NAME = "Machine Breakdown"
 CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with your actual file name
