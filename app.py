@@ -1,39 +1,48 @@
 from flask import Flask, request, jsonify, render_template, redirect
 import datetime
 import smtplib
-from email.mime.text import MIMEText
-import gspread
 import os
 import json
+import gspread
+from email.mime.text import MIMEText
 from google.oauth2.service_account import Credentials
 
 app = Flask(__name__)
 
-
-google_credentials = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
 # Google Sheets configuration
 SHEET_NAME = "Machine Breakdown"
-CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with your actual file name
+CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with actual file name
+
+# Load Google Credentials
+google_credentials_str = os.getenv("GOOGLE_CREDENTIALS")
+if google_credentials_str:
+    google_credentials = json.loads(google_credentials_str)
+    creds = Credentials.from_service_account_info(google_credentials)
+else:
+    creds = Credentials.from_service_account_file(CREDENTIALS_FILE)
 
 # Authenticate with Google Sheets
 def authenticate_sheets():
-    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scope)
-    client = gspread.authorize(creds)
-    return client.open(SHEET_NAME).sheet1
+    try:
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        client = gspread.authorize(creds.with_scopes(scope))
+        return client.open(SHEET_NAME).sheet1
+    except Exception as e:
+        print("Error authenticating with Google Sheets:", e)
+        return None
 
-# Email configuration (Update these with your details)
+# Email Configuration (Use Environment Variables)
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-EMAIL_SENDER = "your-email@gmail.com"  # Replace with your actual email
-EMAIL_PASSWORD = "your-email-password"  # App Password or secure credential
+EMAIL_SENDER = os.getenv("EMAIL_SENDER")  # Set in the environment
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")  # Use an App Password
 EMAIL_MANAGER = "laxmi@pck-buderus.com"  # Manager's email
 
 # Function to send an email alert
 def send_email_alert(machine_name):
     subject = f"ALERT: Frequent Breakdown for {machine_name}"
     body = f"The machine '{machine_name}' has encountered more than 2 breakdowns within the last week."
-    
+
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = EMAIL_SENDER
@@ -58,6 +67,9 @@ def index():
 def submit():
     try:
         sheet = authenticate_sheets()
+        if not sheet:
+            return jsonify({"error": "Failed to connect to Google Sheets"}), 500
+
         machine_name = request.form.get("machine_name")
         issue = request.form.get("issue")
         date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -67,7 +79,7 @@ def submit():
 
         # Append data to Google Sheet
         sheet.append_row([date, machine_name, issue])
-        
+
         # Check if the machine has more than 2 issues in a week
         recent_issues = 0
         one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
