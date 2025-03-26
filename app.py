@@ -13,6 +13,11 @@ app = Flask(__name__)
 SHEET_NAME = "Machine Breakdown"
 CREDENTIALS_FILE = "machine-breakdown-4cc732560cac.json"  # Update with actual file name
 
+json_creds = json.loads(os.getenv("GOOGLE_SHEETS_CREDENTIALS."))
+creds = Credentials.from_service_account_info(json_creds)
+
+gc = gspread.authorize(creds)
+
 # Load Google Credentials
 google_credentials_str = os.getenv("GOOGLE_CREDENTIALS")
 if google_credentials_str:
