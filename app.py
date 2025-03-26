@@ -32,14 +32,28 @@ if google_creds_json:
 else:
     print("GOOGLE_CREDENTIALS not found in environment variables")
 
-# Authenticate with Google Sheets
 def authenticate_sheets():
     try:
+        google_creds_json = os.getenv("GOOGLE_CREDENTIALS")  # Get credentials from environment variable
+        
+        if not google_creds_json:
+            print("❌ Error: GOOGLE_CREDENTIALS environment variable is missing!")
+            return None
+
+        creds_dict = json.loads(google_creds_json)  # Convert string to dictionary
+        creds = Credentials.from_service_account_info(creds_dict)  # Load credentials
+
+        # Set required scopes
         scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        client = gspread.authorize(creds.with_scopes(scope))
-        return client.open(SHEET_NAME).sheet1
+        creds = creds.with_scopes(scope)
+
+        # Authenticate with Google Sheets
+        client = gspread.authorize(creds)
+        print("✅ Successfully authenticated with Google Sheets!")
+
+        return client.open(SHEET_NAME).sheet1  # Open the first sheet
     except Exception as e:
-        print("Error authenticating with Google Sheets:", e)
+        print("❌ Error authenticating with Google Sheets:", e)
         return None
 
 # Email Configuration (Use Environment Variables)
