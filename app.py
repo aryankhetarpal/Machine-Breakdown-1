@@ -121,7 +121,7 @@ def submit():
 
 @app.route("/open_log")
 def open_log():
-    return redirect("https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?usp=sharing")
+    return redirect("https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?gid=0#gid=0")
 
 @app.route("/health")
 def health():
