@@ -18,13 +18,19 @@ creds = Credentials.from_service_account_info(json_creds)
 
 gc = gspread.authorize(creds)
 
-# Load Google Credentials
-google_credentials_str = os.getenv("GOOGLE_CREDENTIALS")
-if google_credentials_str:
-    google_credentials = json.loads(google_credentials_str)
-    creds = Credentials.from_service_account_info(google_credentials)
+google_creds_json = os.getenv("GOOGLE_CREDENTIALS")
+if google_creds_json:
+    creds_dict = json.loads(google_creds_json)
+    creds = Credentials.from_service_account_info(creds_dict)
+
+    # Authenticate with Google Sheets API
+    gc = gspread.authorize(creds)
+
+    # Open the spreadsheet
+    sheet = gc.open("Your Google Sheet Name").sheet1
+    sheet.append_row(["Test Entry"])
 else:
-    creds = Credentials.from_service_account_file(CREDENTIALS_FILE)
+    print("GOOGLE_CREDENTIALS not found in environment variables")
 
 # Authenticate with Google Sheets
 def authenticate_sheets():
