@@ -13,7 +13,8 @@ app = Flask(__name__)
 # -------------------------------------------
 # Google Sheets Configuration
 # -------------------------------------------
-SHEET_NAME = "Machine Breakdown"  # ✅ Change this if your sheet has a different name
+SHEET_NAME = "Machine Breakdown"
+SHEET_ID = "1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc" # ✅ Change this if your sheet has a different name
 
 def authenticate_sheets():
     try:
