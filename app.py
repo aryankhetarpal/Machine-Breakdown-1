@@ -34,24 +34,24 @@ else:
 
 def authenticate_sheets():
     try:
-        google_creds_json = os.getenv("GOOGLE_CREDENTIALS")  # Get credentials from environment variable
-        
-        if not google_creds_json:
-            print("❌ Error: GOOGLE_CREDENTIALS environment variable is missing!")
+        encoded_creds = os.getenv("GOOGLE_CREDENTIALS_BASE64")
+        if not encoded_creds:
+            print("❌ Missing GOOGLE_CREDENTIALS_BASE64 env variable")
             return None
 
-        creds_dict = json.loads(google_creds_json)  # Convert string to dictionary
-        creds = Credentials.from_service_account_info(creds_dict)  # Load credentials
+        creds_json = base64.b64decode(encoded_creds).decode('utf-8')
+        creds_dict = json.loads(creds_json)
 
-        # Set required scopes
-        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        creds = creds.with_scopes(scope)
-
-        # Authenticate with Google Sheets
+        creds = Credentials.from_service_account_info(creds_dict)
+        creds = creds.with_scopes([
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ])
         client = gspread.authorize(creds)
-        print("✅ Successfully authenticated with Google Sheets!")
+        print("✅ Authenticated with gspread")
 
-        return client.open(SHEET_NAME).sheet1  # Open the first sheet
+        return client.open(SHEET_NAME).sheet1
+
     except Exception as e:
         print("❌ Error authenticating with Google Sheets:", e)
         return None
