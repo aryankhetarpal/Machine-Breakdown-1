@@ -18,7 +18,7 @@ SHEET_NAME = "Machine Breakdown"  # ✅ Change this if your sheet has a differen
 def authenticate_sheets():
     try:
         # Read base64 encoded credentials from Azure Environment Variables
-        encoded_creds = os.getenv("GOOGLE_CREDENTIALS_BASE64")
+        encoded_creds = os.getenv("GOOGLE_SHEET_CREDENTIALS")
         if not encoded_creds:
             print("❌ Missing GOOGLE_CREDENTIALS_BASE64 env variable")
             return None
