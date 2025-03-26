@@ -37,7 +37,7 @@ def authenticate_sheets():
         client = gspread.authorize(creds)
         print("✅ Google Sheets Authentication Successful")
 
-        return client.open(SHEET_NAME).sheet1
+        return client.open(SHEET_ID).sheet1
 
     except Exception as e:
         print("❌ Error authenticating with Google Sheets:", e)
