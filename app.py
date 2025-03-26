@@ -13,8 +13,7 @@ app = Flask(__name__)
 # -------------------------------------------
 # Google Sheets Configuration
 # -------------------------------------------
-SHEET_NAME = "Machine Breakdown"
-SHEET_ID = "1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc" # ✅ Change this if your sheet has a different name
+SHEET_ID = "1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc"  # Use the Google Sheet ID
 
 def authenticate_sheets():
     try:
@@ -37,7 +36,10 @@ def authenticate_sheets():
         client = gspread.authorize(creds)
         print("✅ Google Sheets Authentication Successful")
 
-        return client.open(SHEET_ID).sheet1
+        # Open the Google Sheet using its ID directly
+        sheet = client.open_by_key(SHEET_ID).sheet1  # Open the sheet by its ID
+
+        return sheet
 
     except Exception as e:
         print("❌ Error authenticating with Google Sheets:", e)
@@ -122,7 +124,7 @@ def submit():
 
 @app.route("/open_log")
 def open_log():
-    return redirect("https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?gid=0#gid=0")
+    return redirect(f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit?gid=0#gid=0")
 
 @app.route("/health")
 def health():
