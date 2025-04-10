@@ -25,7 +25,6 @@ def authenticate_sheets():
         creds_json = base64.b64decode(encoded_creds).decode('utf-8')
         creds_dict = json.loads(creds_json)
 
-        print("🔐 Decoded credentials successfully")
         creds = Credentials.from_service_account_info(creds_dict)
         creds = creds.with_scopes([
             "https://www.googleapis.com/auth/spreadsheets",
