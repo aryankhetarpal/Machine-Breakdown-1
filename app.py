@@ -17,7 +17,7 @@ SHEET_ID = "1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc"  # Use the Google Shee
 
 def authenticate_sheets():
     try:
-        encoded_creds = os.getenv("GOOGLE_SHEET_CREDENTIALS")
+        encoded_creds = os.getenv("GOOGLE_SHEET_CREDENTIALS_BASE64")
         if not encoded_creds:
             print("❌ GOOGLE_SHEET_CREDENTIALS not set")
             return None
