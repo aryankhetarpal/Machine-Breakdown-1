@@ -17,33 +17,32 @@ SHEET_ID = "1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc"  # Use the Google Shee
 
 def authenticate_sheets():
     try:
-        # Read base64 encoded credentials from Azure Environment Variables
         encoded_creds = os.getenv("GOOGLE_SHEET_CREDENTIALS")
         if not encoded_creds:
-            print("❌ Missing GOOGLE_CREDENTIALS_BASE64 env variable")
+            print("❌ GOOGLE_SHEET_CREDENTIALS not set")
             return None
 
-        # Decode and load credentials
         creds_json = base64.b64decode(encoded_creds).decode('utf-8')
         creds_dict = json.loads(creds_json)
 
-        # Authenticate with Google API
+        print("🔐 Decoded credentials successfully")
         creds = Credentials.from_service_account_info(creds_dict)
         creds = creds.with_scopes([
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ])
         client = gspread.authorize(creds)
-        print("✅ Google Sheets Authentication Successful")
+        print("✅ Google Sheets Auth Successful")
 
-        # Open the Google Sheet using its ID directly
-        sheet = client.open_by_key(SHEET_ID).sheet1  # Open the sheet by its ID
+        sheet = client.open_by_key(SHEET_ID).sheet1
+        print("✅ Sheet Accessed Successfully")
 
         return sheet
 
     except Exception as e:
-        print("❌ Error authenticating with Google Sheets:", e)
+        print("❌ Authentication Error:", e)
         return None
+
 
 # -------------------------------------------
 # Email Configuration (Azure Safe)
