@@ -79,39 +79,65 @@
   </a>
 
   <script>
-    const scriptURL = 'https://machine-break.web.app/'; // <<<--- paste your script URL here
+    // Your Google Sheet ID
+    const SPREADSHEET_ID = '1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc';
+    const API_KEY = 'YOUR_GOOGLE_API_KEY'; // Replace with your actual API key
 
-    document.getElementById("breakdownForm").addEventListener("submit", function(event) {
+    // Load the Google Sheets API client
+    function loadClient() {
+      gapi.client.setApiKey(API_KEY);
+      return gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4')
+        .then(function () {
+          console.log("GAPI client loaded for API");
+        }, function (err) { console.error("Error loading GAPI client for API", err); });
+    }
+
+    // Function to append data to the sheet
+    function appendToSheet(machine, issue) {
+      const params = {
+        spreadsheetId: SPREADSHEET_ID,
+        range: 'Sheet1!A:B',  // Adjust range as needed
+        valueInputOption: 'RAW',
+      };
+
+      const valueRangeBody = {
+        "values": [
+          [machine, issue],
+        ],
+      };
+
+      const request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+      request.then(function (response) {
+        console.log('Data successfully added to sheet:', response);
+        document.getElementById("success-message").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("success-message").style.display = "none";
+        }, 3000);
+        document.getElementById("breakdownForm").reset();
+      }, function (err) {
+        console.error("Error appending data to sheet:", err);
+        alert("Submission failed. Please try again.");
+      });
+    }
+
+    // Initialize the client when the script is loaded
+    function handleClientLoad() {
+      gapi.load('client', loadClient);
+    }
+
+    // Form submission handler
+    document.getElementById("breakdownForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
 
-      fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify({ machine_name: machine, issue: issue }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message) {
-          document.getElementById("success-message").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("success-message").style.display = "none";
-          }, 3000);
-          document.getElementById("breakdownForm").reset();
-        } else {
-          alert("Submission failed.");
-        }
-      })
-      .catch(error => {
-        console.error('Error!', error.message);
-        alert("Submission failed. Please try again.");
-      });
+      appendToSheet(machine, issue);
     });
   </script>
+
+  <!-- Don't forget to add the script to load your Google API -->
+  <script async defer onload="handleClientLoad()" src="https://apis.google.com/js/api.js"></script>
 
 </body>
 </html>
