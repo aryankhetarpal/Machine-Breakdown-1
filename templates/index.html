@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Machine Breakdown Report</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
@@ -14,7 +14,6 @@
     #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
   </style>
 </head>
-
 <body>
 
   <h2>Machine Breakdown Report</h2>
@@ -79,65 +78,35 @@
   </a>
 
   <script>
-    // Your Google Sheet ID
-    const SPREADSHEET_ID = '1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc';
-    const API_KEY = 'AIzaSyBcv4fzpYLD7TlqDpyETNc4DWvILy9IXEg'; // Replace with your actual API key
-
-    // Load the Google Sheets API client
-    function loadClient() {
-      gapi.client.setApiKey(API_KEY);
-      return gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4')
-        .then(function () {
-          console.log("GAPI client loaded for API");
-        }, function (err) { console.error("Error loading GAPI client for API", err); });
-    }
-
-    // Function to append data to the sheet
-    function appendToSheet(machine, issue) {
-      const params = {
-        spreadsheetId: SPREADSHEET_ID,
-        range: 'Sheet1!A:B',  // Adjust range as needed
-        valueInputOption: 'RAW',
-      };
-
-      const valueRangeBody = {
-        "values": [
-          [machine, issue],
-        ],
-      };
-
-      const request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
-      request.then(function (response) {
-        console.log('Data successfully added to sheet:', response);
-        document.getElementById("success-message").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("success-message").style.display = "none";
-        }, 3000);
-        document.getElementById("breakdownForm").reset();
-      }, function (err) {
-        console.error("Error appending data to sheet:", err);
-        alert("Submission failed. Please try again.");
-      });
-    }
-
-    // Initialize the client when the script is loaded
-    function handleClientLoad() {
-      gapi.load('client', loadClient);
-    }
-
-    // Form submission handler
-    document.getElementById("breakdownForm").addEventListener("submit", function (event) {
-      event.preventDefault();
+    document.getElementById("breakdownForm").addEventListener("submit", function (e) {
+      e.preventDefault();
 
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
 
-      appendToSheet(machine, issue);
+      const formData = new FormData();
+      formData.append("machine_name", machine);
+      formData.append("issue", issue);
+
+      fetch("https://script.google.com/macros/s/AKfycbxUXgO8yldRasSMceXZkJt0cKuivpspcECotxBfTJXXOcqMcMCvvYOvaa5cMK4adC6YPg/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("success-message").textContent = data;
+        document.getElementById("success-message").style.display = "block";
+        document.getElementById("breakdownForm").reset();
+        setTimeout(() => {
+          document.getElementById("success-message").style.display = "none";
+        }, 3000);
+      })
+      .catch(error => {
+        console.error("Error submitting form:", error);
+        alert("Submission failed. Please try again.");
+      });
     });
   </script>
-
-  <!-- Don't forget to add the script to load your Google API -->
-  <script async defer onload="handleClientLoad()" src="https://apis.google.com/js/api.js"></script>
 
 </body>
 </html>
