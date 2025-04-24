@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Machine Breakdown Report</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
@@ -14,6 +14,7 @@
     #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
   </style>
 </head>
+
 <body>
 
   <h2>Machine Breakdown Report</h2>
@@ -78,32 +79,41 @@
   </a>
 
   <script>
+    // Handle form submission
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
 
-      const formData = new FormData();
-      formData.append("machine_name", machine);
-      formData.append("issue", issue);
+      const data = {
+        machine: machine,
+        issue: issue
+      };
 
-      fetch("https://script.google.com/macros/s/AKfycbxUXgO8yldRasSMceXZkJt0cKuivpspcECotxBfTJXXOcqMcMCvvYOvaa5cMK4adC6YPg/exec", {
-        method: "POST",
-        body: formData
+      // Replace with your Google Apps Script Web App URL
+      fetch('https://script.google.com/macros/s/AKfycbzCGNCVKnhE2TkJXJAmkwMclccrNpuu1lsp7X9V_SNq6EScl23IxYoTHrhRc3PIEDnc8g/exec', {  // Replace with your actual URL
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("success-message").textContent = data;
-        document.getElementById("success-message").style.display = "block";
-        document.getElementById("breakdownForm").reset();
-        setTimeout(() => {
-          document.getElementById("success-message").style.display = "none";
-        }, 3000);
+      .then(response => response.json())
+      .then(result => {
+        if (result.status === 'success') {
+          document.getElementById("success-message").style.display = "block";
+          setTimeout(() => {
+            document.getElementById("success-message").style.display = "none";
+          }, 3000);
+          document.getElementById("breakdownForm").reset();
+        } else {
+          alert("Submission failed.");
+        }
       })
       .catch(error => {
-        console.error("Error submitting form:", error);
-        alert("Submission failed. Please try again.");
+        console.error("Error:", error);
+        alert("Submission failed. Please check the console for errors.");
       });
     });
   </script>
