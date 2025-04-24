@@ -82,22 +82,23 @@
     // Handle form submission
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
+  
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-
+  
       const data = {
         machine: machine,
         issue: issue
       };
-
+  
       // Replace with your Google Apps Script Web App URL
-      fetch('https://script.google.com/macros/s/AKfycbxpZzThaGm30Gi2gEy_DhzycT0joEjET-bV-xU2YyThirH6sU0Z-ppYGw8L1qmwq7pXRA/exec', {  // Replace with your actual URL
+      fetch('https://script.google.com/macros/s/AKfycbxpZzThaGm30Gi2gEy_DhzycT0joEjET-bV-xU2YyThirH6sU0Z-ppYGw8L1qmwq7pXRA/exec', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'cors'  // Explicitly set CORS mode
       })
       .then(response => response.json())
       .then(result => {
