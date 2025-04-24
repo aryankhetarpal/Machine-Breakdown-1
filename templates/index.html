@@ -75,46 +75,40 @@
   <br>
 
   <a href="https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?usp=sharing" target="_blank">
-    <button>Open Breakdown Log</button>
+    <button type="button">Open Breakdown Log</button>
   </a>
 
   <script>
-    // Handle form submission
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-  
+
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-  
-      const data = {
-        machine: machine,
-        issue: issue
-      };
-  
-      // Replace with your Google Apps Script Web App URL
-      fetch('https://script.google.com/macros/s/AKfycbzvtUoY6XxgU1zsOC1f5LaWu6caM-gmKC1kH96GVTuiDnSlqWtEl56TV0XcgeWgLDo1hQ/exec', {
-        method: 'POST',
-        body: JSON.stringify(data),
+
+      const data = { machine, issue };
+
+      fetch("https://script.google.com/macros/s/AKfycbyVXB5-oMuPQdxzR_LErce4YrEiYZFfxajzmBc268h0sh6-YstFnHrnP28lCOkrJdhHVw/exec", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json"
         },
-        mode: 'cors'  // Explicitly set CORS mode
+        body: JSON.stringify(data)
       })
       .then(response => response.json())
       .then(result => {
-        if (result.status === 'success') {
+        if (result.status === "success") {
           document.getElementById("success-message").style.display = "block";
           setTimeout(() => {
             document.getElementById("success-message").style.display = "none";
           }, 3000);
           document.getElementById("breakdownForm").reset();
         } else {
-          alert("Submission failed.");
+          alert("Submission failed. Message: " + result.message);
         }
       })
       .catch(error => {
-        console.error("Error:", error);
-        alert("Submission failed. Please check the console for errors.");
+        console.error("Fetch error:", error);
+        alert("Submission failed. Please check the console.");
       });
     });
   </script>
