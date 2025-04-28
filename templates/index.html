@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Machine Breakdown Report</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
@@ -81,12 +81,12 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-  
+
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-  
+
       const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
-  
+
       fetch(url, {
         method: "GET"
       })
