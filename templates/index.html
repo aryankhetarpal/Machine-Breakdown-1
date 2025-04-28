@@ -81,18 +81,14 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
+  
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-
-      const data = { machine, issue };
-
-      fetch("https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec", {
-        method: "GET",  // Use GET request
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)  // Send data as JSON
+  
+      const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
+  
+      fetch(url, {
+        method: "GET"
       })
       .then(response => response.json())
       .then(result => {
