@@ -81,26 +81,23 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
+  
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-
+  
       const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
-
+  
       fetch(url, {
-        method: "GET"
+        method: "GET",
+        mode: "no-cors"
       })
-      .then(response => response.json())
-      .then(result => {
-        if (result.status === "success") {
-          document.getElementById("success-message").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("success-message").style.display = "none";
-          }, 3000);
-          document.getElementById("breakdownForm").reset();
-        } else {
-          alert("Submission failed. Message: " + result.message);
-        }
+      .then(() => {
+        // Always assume success (since no-cors doesn't allow reading response)
+        document.getElementById("success-message").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("success-message").style.display = "none";
+        }, 3000);
+        document.getElementById("breakdownForm").reset();
       })
       .catch(error => {
         console.error("Fetch error:", error);
@@ -108,6 +105,7 @@
       });
     });
   </script>
+  
 
 </body>
 </html>
