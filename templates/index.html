@@ -81,35 +81,29 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
+  
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-
-      const data = { machine, issue };
-
-      fetch("https://script.google.com/macros/s/AKfycbyVXB5-oMuPQdxzR_LErce4YrEiYZFfxajzmBc268h0sh6-YstFnHrnP28lCOkrJdhHVw/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.status === "success") {
-          document.getElementById("success-message").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("success-message").style.display = "none";
-          }, 3000);
-          document.getElementById("breakdownForm").reset();
-        } else {
-          alert("Submission failed. Message: " + result.message);
-        }
-      })
-      .catch(error => {
-        console.error("Fetch error:", error);
-        alert("Submission failed. Please check the console.");
-      });
+  
+      const url = `https://script.google.com/macros/s/AKfycbyVXB5-oMuPQdxzR_LErce4YrEiYZFfxajzmBc268h0sh6-YstFnHrnP28lCOkrJdhHVw/exec=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
+  
+      fetch(url)
+        .then(response => response.json())
+        .then(result => {
+          if (result.status === "success") {
+            document.getElementById("success-message").style.display = "block";
+            setTimeout(() => {
+              document.getElementById("success-message").style.display = "none";
+            }, 3000);
+            document.getElementById("breakdownForm").reset();
+          } else {
+            alert("Submission failed. Message: " + result.message);
+          }
+        })
+        .catch(error => {
+          console.error("Fetch error:", error);
+          alert("Submission failed. Please check the console.");
+        });
     });
   </script>
 
