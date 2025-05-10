@@ -111,7 +111,7 @@
       }
 
       fetch("https://script.google.com/macros/s/AKfycbxYu2cdCsPth5bTlV-WMy-2WM-BoBatJeiHLZKBMpl4KpT5BHEcsRr4XLI4yI0sJzWRWw/exec", {
-        method: "POST",
+        method: "GET",
         body: JSON.stringify({ machine, issue, priority, status }),
         headers: {
           "Content-Type": "application/json",
