@@ -14,10 +14,9 @@
     #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
   </style>
 </head>
-
 <body>
-  <h2>Machine Breakdown Report</h2>
 
+  <h2>Machine Breakdown Report</h2>
   <div id="success-message">Breakdown recorded successfully!</div>
 
   <form id="breakdownForm">
@@ -54,7 +53,7 @@
     </select>
 
     <label for="issue_dropdown">Select Issue:</label>
-    <select name="issue_dropdown">
+    <select id="issue_dropdown">
       <option value="">-- Select Issue --</option>
       <option value="Oil Spring Problem">Oil Spring Problem</option>
       <option value="Blade Guide Problem">Blade Guide Problem</option>
@@ -68,11 +67,11 @@
       <option value="Spindle Feedback">Spindle Feedback</option>
     </select>
 
-    <label for="issue_text">Or Enter Custom Issue:</label>
-    <input type="text" name="issue_text" placeholder="Enter custom issue (optional)">
+    <label for="issue">Or Enter Issue:</label>
+    <input type="text" id="issue" name="issue" placeholder="Custom issue (optional)" />
 
     <label for="priority">Priority:</label>
-    <select name="priority" required>
+    <select id="priority" name="priority" required>
       <option value="Critical">Critical</option>
       <option value="High">High</option>
       <option value="Normal">Normal</option>
@@ -80,7 +79,7 @@
     </select>
 
     <label for="status">Status:</label>
-    <select name="status" required>
+    <select id="status" name="status" required>
       <option value="In Progress">In Progress</option>
       <option value="On Hold">On Hold</option>
       <option value="Completed">Completed</option>
@@ -91,7 +90,6 @@
   </form>
 
   <br />
-
   <a href="https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?usp=sharing" target="_blank">
     <button type="button">Open Breakdown Log</button>
   </a>
@@ -101,30 +99,31 @@
       e.preventDefault();
 
       const machine = document.getElementById("machine_name").value;
-      const issueDropdown = document.querySelector('select[name="issue_dropdown"]').value;
-      const issueText = document.querySelector('input[name="issue_text"]').value.trim();
-      const priority = document.querySelector('select[name="priority"]').value;
-      const status = document.querySelector('select[name="status"]').value;
+      const dropdownIssue = document.getElementById("issue_dropdown").value;
+      const typedIssue = document.getElementById("issue").value.trim();
+      const issue = typedIssue || dropdownIssue;
+      const priority = document.getElementById("priority").value;
+      const status = document.getElementById("status").value;
 
-      const finalIssue = issueText !== "" ? issueText : issueDropdown;
-
-      if (!finalIssue) {
-        alert("Please select or enter an issue.");
+      if (!machine || !issue || !priority || !status) {
+        alert("Please fill all required fields.");
         return;
       }
 
-      const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(finalIssue)}&priority=${encodeURIComponent(priority)}&status=${encodeURIComponent(status)}`;
-
-      fetch(url, {
-        method: "GET",
-        mode: "no-cors"
-      }).then(() => {
-        document.getElementById("success-message").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("success-message").style.display = "none";
-        }, 3000);
-        document.getElementById("breakdownForm").reset();
-      });
+      fetch("https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec", {
+        method: "POST",
+        body: JSON.stringify({ machine, issue, priority, status }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then(() => {
+          document.getElementById("success-message").style.display = "block";
+          setTimeout(() => {
+            document.getElementById("success-message").style.display = "none";
+          }, 3000);
+          document.getElementById("breakdownForm").reset();
+        });
     });
   </script>
 </body>
