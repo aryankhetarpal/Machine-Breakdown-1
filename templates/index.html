@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Machine Breakdown Report</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     form { max-width: 400px; margin: auto; display: flex; flex-direction: column; }
     label { margin-top: 10px; font-weight: bold; }
-    select, button { margin-top: 5px; padding: 8px; font-size: 16px; }
+    select, input, button { margin-top: 5px; padding: 8px; font-size: 16px; }
     button { background-color: #28a745; color: white; border: none; cursor: pointer; }
     button:hover { background-color: #218838; }
     #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
@@ -16,7 +16,6 @@
 </head>
 
 <body>
-
   <h2>Machine Breakdown Report</h2>
 
   <div id="success-message">Breakdown recorded successfully!</div>
@@ -54,8 +53,8 @@
       <option value="FABBARICA ITALIANA SWGATRICI">FABBARICA ITALIANA SWGATRICI</option>
     </select>
 
-    <label for="issue">Select Issue:</label>
-    <select id="issue" name="issue" required>
+    <label for="issue_dropdown">Select Issue:</label>
+    <select name="issue_dropdown">
       <option value="">-- Select Issue --</option>
       <option value="Oil Spring Problem">Oil Spring Problem</option>
       <option value="Blade Guide Problem">Blade Guide Problem</option>
@@ -69,10 +68,29 @@
       <option value="Spindle Feedback">Spindle Feedback</option>
     </select>
 
+    <label for="issue_text">Or Enter Custom Issue:</label>
+    <input type="text" name="issue_text" placeholder="Enter custom issue (optional)">
+
+    <label for="priority">Priority:</label>
+    <select name="priority" required>
+      <option value="Critical">Critical</option>
+      <option value="High">High</option>
+      <option value="Normal">Normal</option>
+      <option value="Low">Low</option>
+    </select>
+
+    <label for="status">Status:</label>
+    <select name="status" required>
+      <option value="In Progress">In Progress</option>
+      <option value="On Hold">On Hold</option>
+      <option value="Completed">Completed</option>
+      <option value="Pending">Pending</option>
+    </select>
+
     <button type="submit">Submit</button>
   </form>
 
-  <br>
+  <br />
 
   <a href="https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?usp=sharing" target="_blank">
     <button type="button">Open Breakdown Log</button>
@@ -81,28 +99,33 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-  
+
       const machine = document.getElementById("machine_name").value;
-      const issue = document.getElementById("issue").value;
-  
-      const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
-  
+      const issueDropdown = document.querySelector('select[name="issue_dropdown"]').value;
+      const issueText = document.querySelector('input[name="issue_text"]').value.trim();
+      const priority = document.querySelector('select[name="priority"]').value;
+      const status = document.querySelector('select[name="status"]').value;
+
+      const finalIssue = issueText !== "" ? issueText : issueDropdown;
+
+      if (!finalIssue) {
+        alert("Please select or enter an issue.");
+        return;
+      }
+
+      const url = `https://script.google.com/macros/s/AKfycbzby82UXiHJkWIKpzFvuLgPLC8WxByfp_W0xZbJPuIKqXL_Yg2PlWqfX1riI4xJfpgEoQ/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(finalIssue)}&priority=${encodeURIComponent(priority)}&status=${encodeURIComponent(status)}`;
+
       fetch(url, {
         method: "GET",
         mode: "no-cors"
-      })
-      .then(() => {
-        // Always assume success (since no-cors doesn't allow reading response)
+      }).then(() => {
         document.getElementById("success-message").style.display = "block";
         setTimeout(() => {
           document.getElementById("success-message").style.display = "none";
         }, 3000);
         document.getElementById("breakdownForm").reset();
-      })
-      
+      });
     });
   </script>
-  
-
 </body>
 </html>
