@@ -99,10 +99,11 @@
         }, 3000);
         document.getElementById("breakdownForm").reset();
       })
-      
+      .catch((error) => {
+        console.error("Error submitting form: ", error);
+      });
     });
   </script>
-  
 
 </body>
 </html>
