@@ -14,7 +14,6 @@
     #success-message { display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px; }
   </style>
 </head>
-
 <body>
 
   <h2>Machine Breakdown Report</h2>
@@ -73,8 +72,8 @@
     <select id="status" name="status" required>
       <option value="">-- Select Status --</option>
       <option value="In Progress">In Progress</option>
+      <option value="Waiting for Parts">Waiting for Parts</option>
       <option value="Finished">Finished</option>
-      <option value="Pending">Pending</option>
     </select>
 
     <label for="priority">Select Priority:</label>
@@ -97,20 +96,19 @@
   <script>
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
-  
+
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
       const status = document.getElementById("status").value;
       const priority = document.getElementById("priority").value;
 
       const url = `https://script.google.com/macros/s/AKfycbxNn8yFHjJLw1vS6AW9j0OaEG1IZnDVUVlSSfzWlus7Ztqp_RR2LT2RjU_NeZqQ_wXB_A/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}&status=${encodeURIComponent(status)}&priority=${encodeURIComponent(priority)}`;
-  
+
       fetch(url, {
         method: "GET",
         mode: "no-cors"
       })
       .then(() => {
-        // Always assume success (since no-cors doesn't allow reading response)
         document.getElementById("success-message").style.display = "block";
         setTimeout(() => {
           document.getElementById("success-message").style.display = "none";
