@@ -103,7 +103,7 @@
       const status = document.getElementById("status").value;
       const priority = document.getElementById("priority").value;
 
-      const url = `https://script.google.com/macros/s/AKfycbxNn8yFHjJLw1vS6AW9j0OaEG1IZnDVUVlSSfzWlus7Ztqp_RR2LT2RjU_NeZqQ_wXB_A/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
+      const url = `https://script.google.com/macros/s/AKfycbxNn8yFHjJLw1vS6AW9j0OaEG1IZnDVUVlSSfzWlus7Ztqp_RR2LT2RjU_NeZqQ_wXB_A/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}&status=${encodeURIComponent(status)}&priority=${encodeURIComponent(priority)}`;
   
       fetch(url, {
         method: "GET",
