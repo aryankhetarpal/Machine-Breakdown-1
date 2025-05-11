@@ -69,6 +69,22 @@
       <option value="Spindle Feedback">Spindle Feedback</option>
     </select>
 
+    <label for="status">Select Status:</label>
+    <select id="status" name="status" required>
+      <option value="">-- Select Status --</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Finished">Finished</option>
+      <option value="Pending">Pending</option>
+    </select>
+
+    <label for="priority">Select Priority:</label>
+    <select id="priority" name="priority" required>
+      <option value="">-- Select Priority --</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+
     <button type="submit">Submit</button>
   </form>
 
@@ -84,7 +100,9 @@
   
       const machine = document.getElementById("machine_name").value;
       const issue = document.getElementById("issue").value;
-  
+      const status = document.getElementById("status").value;
+      const priority = document.getElementById("priority").value;
+
       const url = `https://script.google.com/macros/s/AKfycbxNn8yFHjJLw1vS6AW9j0OaEG1IZnDVUVlSSfzWlus7Ztqp_RR2LT2RjU_NeZqQ_wXB_A/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}`;
   
       fetch(url, {
