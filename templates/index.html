@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Machine Breakdown Report</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
@@ -23,17 +23,49 @@
   <form id="breakdownForm">
     <label for="machine_name">Select Machine:</label>
     <select id="machine_name" name="machine_name" required>
-      <!-- options omitted for brevity, keep your full list -->
       <option value="">-- Select Machine --</option>
       <option value="ITL 1">ITL 1</option>
-      <!-- more options -->
+      <option value="ITL 2">ITL 2</option>
+      <option value="K1">K1</option>
+      <option value="K2">K2</option>
+      <option value="K3">K3</option>
+      <option value="K4">K4</option>
+      <option value="J1">J1</option>
+      <option value="J2">J2</option>
+      <option value="V3">V3</option>
+      <option value="V5">V5</option>
+      <option value="V6">V6</option>
+      <option value="BITL">BITL</option>
+      <option value="ITM2">ITM2</option>
+      <option value="ITM3">ITM3</option>
+      <option value="Rivers">Rivers</option>
+      <option value="K5">K5</option>
+      <option value="K6">K6</option>
+      <option value="K7">K7</option>
+      <option value="K8">K8</option>
+      <option value="K9">K9</option>
+      <option value="V7">V7</option>
+      <option value="B">B</option>
+      <option value="V8">V8</option>
+      <option value="K 10">K 10</option>
+      <option value="Friggi">Friggi</option>
+      <option value="B2">B2</option>
+      <option value="FABBARICA ITALIANA SWGATRICI">FABBARICA ITALIANA SWGATRICI</option>
     </select>
 
     <label for="issue">Select Issue:</label>
     <select id="issue" name="issue" required>
       <option value="">-- Select Issue --</option>
       <option value="Oil Spring Problem">Oil Spring Problem</option>
-      <!-- more options -->
+      <option value="Blade Guide Problem">Blade Guide Problem</option>
+      <option value="Oil Pressure">Oil Pressure</option>
+      <option value="Blade Tension">Blade Tension</option>
+      <option value="Gear box Problem">Gear box Problem</option>
+      <option value="Hydraulic Problem">Hydraulic Problem</option>
+      <option value="Electrical Problem">Electrical Problem</option>
+      <option value="Axis Ball Screw">Axis Ball Screw</option>
+      <option value="Timing Belt">Timing Belt</option>
+      <option value="Spindle Feedback">Spindle Feedback</option>
     </select>
 
     <label for="status">Select Status:</label>
@@ -55,7 +87,7 @@
     <button type="submit">Submit</button>
   </form>
 
-  <br />
+  <br>
 
   <a href="https://docs.google.com/spreadsheets/d/1G368ctBWJ88OAKQik3Imu-Hzu1PkrCzpYnyuuiCrmXc/edit?usp=sharing" target="_blank">
     <button type="button">Open Breakdown Log</button>
@@ -65,34 +97,27 @@
     document.getElementById("breakdownForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const form = e.target;
-      const formData = new URLSearchParams();
+      const machine = document.getElementById("machine_name").value;
+      const issue = document.getElementById("issue").value;
+      const status = document.getElementById("status").value;
+      const priority = document.getElementById("priority").value;
 
-      formData.append("machine", form.machine_name.value);
-      formData.append("issue", form.issue.value);
-      formData.append("status", form.status.value);
-      formData.append("priority", form.priority.value);
+      const url = `https://script.google.com/macros/s/AKfycbxNn8yFHjJLw1vS6AW9j0OaEG1IZnDVUVlSSfzWlus7Ztqp_RR2LT2RjU_NeZqQ_wXB_A/exec?machine=${encodeURIComponent(machine)}&issue=${encodeURIComponent(issue)}&status=${encodeURIComponent(status)}&priority=${encodeURIComponent(priority)}`;
 
-      // Replace this with your actual Google Apps Script Web App URL (deployed)
-      const webAppUrl = "https://script.google.com/macros/s/AKfycbwGLkd6ibdPtX4qXokv_MaEoh5FDuV1CdBYxwwRZXqQbD_tQ5viV9YHCyHtHAYnqaqESg/exec";
-
-      fetch(webAppUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString()
+      fetch(url, {
+        method: "GET",
+        mode: "no-cors"
       })
-        .then(response => response.text())
-        .then(() => {
-          document.getElementById("success-message").style.display = "block";
-          setTimeout(() => {
-            document.getElementById("success-message").style.display = "none";
-          }, 3000);
-          form.reset();
-        })
-        .catch((error) => {
-          console.error("Error submitting form:", error);
-          alert("Failed to submit form. Please try again.");
-        });
+      .then(() => {
+        document.getElementById("success-message").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("success-message").style.display = "none";
+        }, 3000);
+        document.getElementById("breakdownForm").reset();
+      })
+      .catch((error) => {
+        console.error("Error submitting form: ", error);
+      });
     });
   </script>
 
