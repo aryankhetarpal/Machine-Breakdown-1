@@ -4,24 +4,7 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/*.exe",
-      "**/*.bat",
-      "**/*.cmd",
-      "**/*.sh",
       "**/node_modules/**"
     ]
-  },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "venv",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ]
-    }
-  ]
+  }
 }
